@@ -39,7 +39,7 @@
 
         <reactome.graph.core>1.1.2</reactome.graph.core>
         <reactome.base>1.2.8</reactome.base>
-        <neo4j.version>3.2.3</neo4j.version>
+        <neo4j.version>3.3.0</neo4j.version>
     </properties>
 
     <dependencies>
