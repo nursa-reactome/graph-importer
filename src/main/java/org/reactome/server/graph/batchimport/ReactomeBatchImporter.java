@@ -1,6 +1,7 @@
 package org.reactome.server.graph.batchimport;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.IllegalClassException;
 import org.gk.model.GKInstance;
@@ -10,6 +11,7 @@ import org.gk.persistence.MySQLAdaptor;
 import org.gk.schema.InvalidClassException;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.RelationshipType;
+import org.neo4j.graphdb.schema.IndexCreator;
 import org.neo4j.ogm.annotation.Relationship;
 import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
@@ -20,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
@@ -60,6 +63,7 @@ public class ReactomeBatchImporter {
 
     private static final int width = 70;
     private static int total;
+    private static List<IndexCreator> indexCreaters = new ArrayList<IndexCreator>();
 
     private static final DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -104,6 +108,12 @@ public class ReactomeBatchImporter {
         importLogger.info("Storing the graph");
         System.out.println("\n\nPlease wait while storing the graph...");
         batchInserter.shutdown();
+        // Create the indexes just prior to shutdown per the
+        // http://neo4j.com/docs/java-reference/current/javadocs/org/neo4j/unsafe/batchinsert/BatchInserter.html
+        // createDeferredSchemaIndex javadoc.
+        for (IndexCreator indexCreater: indexCreaters) {
+            indexCreater.create();
+        }
         importLogger.info("All top level pathways have been imported to Neo4j");
         System.out.println("\rAll top level pathways have been imported to Neo4j");
     }
@@ -574,7 +584,9 @@ public class ReactomeBatchImporter {
      */
     private static void createDeferredSchemaIndex(Class clazz, String name) {
         try {
-            batchInserter.createDeferredSchemaIndex(Label.label(clazz.getSimpleName())).on(name).create();
+            IndexCreator indexCreater =
+                    batchInserter.createDeferredSchemaIndex(Label.label(clazz.getSimpleName())).on(name);
+            indexCreaters.add(indexCreater);
         } catch (Throwable e) {
             //ConstraintViolationException and PreexistingIndexEntryConflictException are both catch here
             importLogger.warn("Could not create Index on " + clazz.getSimpleName() + " for " + name);
