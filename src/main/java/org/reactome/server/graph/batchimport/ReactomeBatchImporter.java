@@ -12,6 +12,7 @@ import org.gk.schema.InvalidClassException;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.schema.IndexCreator;
+import org.neo4j.index.lucene.unsafe.batchinsert.LuceneBatchInserterIndexProvider;
 import org.neo4j.ogm.annotation.Relationship;
 import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
@@ -66,6 +67,7 @@ public class ReactomeBatchImporter {
     private static List<IndexCreator> indexCreaters = new ArrayList<IndexCreator>();
 
     private static final DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private LuceneBatchInserterIndexProvider indexProvider;
 
     public ReactomeBatchImporter(String host, Integer port, String name, String user, String password, String neo4j) {
         try {
@@ -508,6 +510,7 @@ public class ReactomeBatchImporter {
 
         File file = cleanDatabase();
         batchInserter = BatchInserters.inserter(file);
+        indexProvider = new LuceneBatchInserterIndexProvider(batchInserter);
         createConstraints();
     }
 
