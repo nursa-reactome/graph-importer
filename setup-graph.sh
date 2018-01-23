@@ -50,8 +50,6 @@ _OVERWRITE=false
 _IMPORT_DATA=false
 _INSTALL_NEO4J=false
 
-# Note: the 
-
 # :h (help) should be at the very end of the while loop
 while getopts ":r:s:t:u:p:v:d:e:m:n:ijh" option; do
   case "$option" in
