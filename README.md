@@ -4,34 +4,50 @@
 
 ## What is the Reactome Graph Batch Importer project
 
-The Batch Importer is a tool used for initial data conversion from the Reactome relational database to a graph database. To maximise import performance the Neo4j Batch Importer is utilised to directly create the Neo4j database file structure. This process is unsafe ignoring transactions, constraints or other safety features. Constraints will be checked once the import process has finished. 
+The Batch Importer is a tool used for initial data conversion from the
+Reactome relational database to a graph database. To maximise import
+performance the Neo4j Batch Importer is utilised to directly create the
+Neo4j database file structure. This process is unsafe ignoring transactions,
+constraints or other safety features. Constraints will be checked once
+the import process has finished.
 
-The Batch Importer generates the graph database dynamically depending on the Model specified in the Reactome graph library. Depending on the POJOs specified in Domain model, data will be automatically fetched from corresponding Instances of the relational database. Annotations used in the model help to indicate properties and relationships that should be taken into account in the import process.  
+The Batch Importer generates the graph database dynamically depending
+on the Model specified in the Reactome graph library. Depending on the
+POJOs specified in Domain model, data will be automatically fetched
+from corresponding Instances of the relational database. Annotations
+used in the model help to indicate properties and relationships that
+should be taken into account in the import process.
 
 #### Project components used:
 
-* [Neo4j](https://neo4j.com/download/) Community Edition - version: 3.2.2 or latest
-* Reactome [Graph](https://github.com/reactome/graph-core) Core 
+* [Neo4j](https://neo4j.com/download/) Community Edition - version 3.2.2
+  or later
+* Reactome [Graph Core](https://github.com/reactome/graph-core)
 
 #### Reactome data import
 
-Reactome data will be automatically be imported when running the [script](https://raw.githubusercontent.com/reactome/graph-importer/master/setup-graph.sh) ```setup-graph.sh```. User executing this script will be asked for password if permissions require it.
+Reactome data will be automatically be imported when running the
+[script](https://raw.githubusercontent.com/reactome/graph-importer/master/setup-graph.sh)
+```setup-graph.sh```. User executing this script will be asked for
+password if permissions require it.
 
-Another option could be cloning the git repository ```git clone https://github.com/reactome/graph-importer.git``` 
- 
+Another option could be cloning the git repository ```git clone
+https://github.com/reactome/graph-importer.git```
+
 * Script Usage
 ```console
-./setup-graph 
-    -h  Print usage.
-    -i  Add -i to Install Neo4j
-    -j  Add -j to Importa Data into Neo4j
-    -h  Reactome MySQL database host. DEFAULT: localhost
+./setup-graph
+    -h  Program help/usage
+    -i  Install Neo4j. DEFAULT: false
+    -j  Import Reactome data. DEFAULT: false
+    -r  Reactome MySQL database host. DEFAULT: localhost
     -s  Reactome MySQL database port. DEFAULT: 3306
     -t  Reactome MySQL database name. DEFAULT: reactome
     -u  Reactome MySQL database user. DEFAULT: reactome
-    -v  Reactome MySQL database password. DEFAULT: reactome
-    -d  Target directory where graph will be created DEFAULT: ./target/graph.db
-    -n  Neo4j password (only set when neo4j is installed)
+    -p  Reactome MySQL database password. DEFAULT: reactome
+    -d  Neo4j target database parent directory. DEFAULT: /var/lib/neo4j/data/
+    -e  Neo4j target database name. DEFAULT: graph.db
+    -n  Neo4j password (only set when Neo4j is installed)
 ```
 
 :warning: Do not execute as sudo, permission will be asked when required
@@ -39,67 +55,79 @@ Another option could be cloning the git repository ```git clone https://github.c
 * Installing Neo4j (Linux only)
 ```console
 ./setup-graph -i
+    -n Optional Neo4j password."
 ```
 
 * Installing Neo4j in other platforms
     * [MAC OS X](http://neo4j.com/docs/operations-manual/current/installation/osx/)
     * [Windows](http://neo4j.com/docs/operations-manual/current/installation/windows/)
-    
+
 ```console
 By opening http://localhost:7474 and reaching Neo4j browser you're ready to import data.
 ```
 
 * Importing Data
 
-> :memo: Refer to [Extras](https://github.com/gsviteri/DemoLayout/new/master?readme=1#extras) in order to download the MySql database before starting.
+> :memo: Refer to [Extras](https://github.com/gsviteri/DemoLayout/new/master?readme=1#extras)
+  in order to download the MySql database before starting.
 
 ```console
-./setup-graph -j 
-    -h  Reactome MySQL database host. DEFAULT: localhost
+./setup-graph -j
+    -h  Program help/usage
+    -i  Install Neo4j. DEFAULT: false
+    -j  Import Reactome data. DEFAULT: false
+    -r  Reactome MySQL database host. DEFAULT: localhost
     -s  Reactome MySQL database port. DEFAULT: 3306
     -t  Reactome MySQL database name. DEFAULT: reactome
     -u  Reactome MySQL database user. DEFAULT: reactome
-    -v  Reactome MySQL database password. DEFAULT: reactome
-    -d  Target directory where graph will be created DEFAULT: ./target/graph.db
-    -n  Neo4j password (only set when neo4j is installed)
+    -p  Reactome MySQL database password. DEFAULT: reactome
+    -d  Neo4j target database parent directory. DEFAULT: /var/lib/neo4j/data/
+    -e  Neo4j target database name. DEFAULT: graph.db
 ```
 
 Example:
 ```
-./setup-graph -j -h localhost -s 3306 -t reactome -u reactome_user -p not2share -d ./target/graph.db
+./setup-graph.sh -j -h localhost -s 3306 -t reactome -u reactome_user -p not2share -d ./target -e graph.db
 ```
 
 #### Data Import without the script
 
-Reactome data can be imported without the script using the Main.java entry point. Use: ```java -jar BatchImporter-jar-with-dependencies.jar```
+Reactome data can be imported without the script using the `BatchImporter.jar` file:
 
-:warning: **CAUTION:** In order for the import to succeed following steps must be ensured:
-  1. All permissions to the specified target folder must be granted to the executing users of the jar file
-  2. When using the new database, permissions must be given to neo4j in order to access the database.
-  3. Restart neo4j 
+    java -jar ./target/BatchImporter.jar [options]
+
+:warning: **CAUTION:** In order for the import to succeed, please ensure the following:
+  1. All permissions to the specified target folder are granted to the user executing
+     the jar file.
+  2. When using the new database, permissions to access the database are given to the
+     effective user running the Neo4j service.
+  3. Neo4j is stopped before and restarted after the import.
+  
+  The `setup-graph.sh` script attempts to perform these actions on Linux platforms only.
 
 **Properties**
 
-When executing the jar file following properties have to be set.
+The jar file execution properties are as follows:
 ```java
     -h  Reactome MySQL database host. DEFAULT: localhost
     -s  Reactome MySQL database port. DEFAULT: 3306
-    -t  Reactome MySQL database name. DEFAULT: reactome
+    -d  Reactome MySQL database name. DEFAULT: reactome
     -u  Reactome MySQL database user. DEFAULT: reactome
-    -v  Reactome MySQL database password. DEFAULT: reactome
-    -d  Target directory where graph will be created DEFAULT: ./target/graph.db
-    -n  Neo4j password (only set when neo4j is installed)
+    -p  Reactome MySQL database password. DEFAULT: reactome
+    -o  Target output Neo4j database path. DEFAULT: ./target/graph.db
 ```
+Note that the `-o` jar file option is the file path concatenation
+of the `setup.sh` `-d` and `-e` options.
 
 Example:
 ```java
-java -jar BatchImporter-jar-with-dependencies.jar \ 
-     -h localhost \ 
+java -jar BatchImporter.jar \
+     -h localhost \
      -s 3306 \
-     -t reactome \ 
+     -d reactome \
      -u reactome_user \
-     -p not2share \ 
-     -d ./target/graph.db
+     -p not2share \
+     -o ./target/graph.db
 ```
 
 #### Extras
