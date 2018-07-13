@@ -49,6 +49,30 @@
         </encoder>
     </appender>
 
+
+    <appender name="CONSISTENCY_CHECK_REPORT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>./logs/DataConsistencyCheck_Report-%d{yyyy-MM-dd}.csv</fileNamePattern>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            <maxHistory>-1</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="CONSISTENCY_CHECK_SUMMARY" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>./logs/DataConsistencyCheck_Summary-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            <maxHistory>-1</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
     <logger name="deng" level="DEBUG"/>
 
     <logger name="import" level="INFO">
@@ -57,6 +81,14 @@
 
     <logger name="import_error" level="WARN">
         <appender-ref ref="IMPORT_ERROR"/>
+    </logger>
+
+    <logger name="consistency_check_report" level="INFO">
+        <appender-ref ref="CONSISTENCY_CHECK_REPORT"/>
+    </logger>
+
+    <logger name="consistency_check_summary" level="INFO">
+        <appender-ref ref="CONSISTENCY_CHECK_SUMMARY"/>
     </logger>
 
     <root level="INFO">

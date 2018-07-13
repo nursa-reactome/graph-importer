@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.reactome.server.graph</groupId>
     <artifactId>graph-importer</artifactId>
 
     <packaging>jar</packaging>
-    <version>1.0.0</version>
-    <name>BatchImporter</name>
+    <version>1.1.0</version>
+    <name>GraphImporter</name>
 
     <description>
-        The Batch Importer is a executable jar file to convert data taken form the Reactome MySQL Database to a Graph Database. For more information visit the reactome github repository.
+        The Graph Importer is a executable jar file to convert data taken form the Reactome MySQL Database to a Neo4j Graph Database.
+        For more information visit the reactome github repository.
     </description>
 
     <organization>
@@ -37,9 +37,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <reactome.graph.core>1.1.2</reactome.graph.core>
-        <reactome.base>1.2.8</reactome.base>
-        <neo4j.version>3.2.3</neo4j.version>
+        <reactome.graph.core>1.1.10</reactome.graph.core>
+        <reactome.base>1.2.13</reactome.base>
+        <neo4j.version>3.4.0</neo4j.version>
+        <interactor-core>1.0.14</interactor-core>
+
+        <json.version>20090211</json.version>
     </properties>
 
     <dependencies>
@@ -72,18 +75,23 @@
             <artifactId>jsap</artifactId>
             <version>2.1</version>
         </dependency>
+        <!--Org json importer-->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>${json.version}</version>
+        </dependency>
+        <!-- SQLite JDBC -->
+        <dependency>
+            <groupId>org.reactome.server.interactors</groupId>
+            <artifactId>interactor-core</artifactId>
+            <version>${interactor-core}</version>
+        </dependency>
         <!--Logback classic-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.1.10</version>
-        </dependency>
-        <!--To be removed soon -->
-        <!--needed because bug in DiagramGeneratorFromDB-->
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
         </dependency>
     </dependencies>
 
@@ -168,6 +176,50 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <!--Concatenate all versions of org.neo4j.kernel.impl.api.scan.NativeLabelScanStoreExtension from different jars with the same name-->
+            <!--<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <transformers>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                            <resource>META-INF/spring.handlers</resource>
+                        </transformer>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                            <resource>META-INF/spring.schemas</resource>
+                        </transformer>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <manifestEntries>
+                                <Main-Class>org.reactome.server.graph.Main</Main-Class>
+                            </manifestEntries>
+                        </transformer>
+                    </transformers>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>-->
         </plugins>
     </build>
 </project>
