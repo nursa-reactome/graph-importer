@@ -166,7 +166,7 @@ if $_IMPORT_DATA ; then
     cp -R $HOME/workspace/reactome/server/graph-importer/* $_PROJECT_DIR
     #git clone "$_REPO" "$_TEMPDIR"
   fi
-  _JAR_FILE="$_PROJECT_DIR/target/BatchImporter.jar"
+  _JAR_FILE="$_PROJECT_DIR/target/GraphImporter.jar"
   if [ ! -f "$_JAR_FILE" ]; then
     echo "Packaging the reactome graph-importer project..."
     if ! (cd "$_PROJECT_DIR"; mvn -q clean package -U -DskipTests); then
